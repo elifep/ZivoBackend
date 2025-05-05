@@ -20,7 +20,7 @@ dotenv.config();
 const app = express();
 app.use(cors({
   origin: 'http://localhost:8081', // sadece frontend'e izin ver
-  credentials: true, // eğer cookie de taşıyorsan
+  credentials: false, // eğer cookie de taşıyorsan false olsun secure storage token mobilde
 }));
 app.use(express.json());
 
