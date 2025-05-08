@@ -29,14 +29,13 @@ export const createBusiness = async (business: Omit<Business, 'businessId'>): Pr
 };
 
 export const updateBusiness = async (id: string, business: Partial<Business>): Promise<Business | null> => {
-    const fields = ['businessName', 'name', 'businessPhone', 'description', 'address', 'city', 'town', 'adressLine1', 'adressLine2', 'image_url'];
+    const entries = Object.entries(business).filter(([_, value]) => value !== undefined);
 
-    const setClause = fields
-        .map((field, index) => `${field} = ${index + 2}`)
-        .join(', ');
+    if (entries.length === 0) return null;
 
-    const values = fields.map(field => business[field as keyof Business]);
-    values.unshift(id);
+    const setClause = entries.map(([key], i) => `${key} = $${i + 2}`).join(', ');
+    const values = entries.map(([_, value]) => value);
+    values.unshift(id); // $1 → businessId
 
     const { rows } = await pool.query(
         `UPDATE business SET ${setClause} WHERE businessId = $1 RETURNING *`,

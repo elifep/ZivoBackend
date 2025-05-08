@@ -11,7 +11,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(400).json({ message: 'Email and password are required' });
         return;
     }
-    const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const emailLower = email.toLowerCase();
+    const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [emailLower]);
     const user = rows[0];
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -31,7 +32,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         { expiresIn: '7d' } // 7 gün geçerli
     );
 
-    res.json({ accessToken, refreshToken });
+    res.json({
+        accessToken,
+        refreshToken,
+        user: {
+            userId: user.userid,
+            email: user.email,
+            role: user.role
+        }
+    });
 };
 export const refreshToken = (req: Request, res: Response): void => {
     const { token } = req.body;
@@ -98,7 +107,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         res.status(201).json({
             message: 'User registered successfully',
             accessToken,
-            refreshToken
+            refreshToken,
+            user: {
+                userId: user.userid,
+                email: user.email,
+                role: user.role
+            }
         });
 
     } catch (err) {

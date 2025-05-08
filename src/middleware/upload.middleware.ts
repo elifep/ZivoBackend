@@ -1,3 +1,4 @@
+// middleware/upload.middleware.ts
 import multer from 'multer';
 
 const storage = multer.memoryStorage(); // AWS'ye göndereceksen bellekte tutmak yeterli
