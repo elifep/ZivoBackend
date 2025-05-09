@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import * as businessService from '../services/business.service';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { uploadToS3 } from '../utils/uploadToS3';
+
 export const getBusinesses = async (req: Request, res: Response): Promise<void> => {
     const businesses = await businessService.getAllBusinesses();
     res.json(businesses);
@@ -27,8 +29,7 @@ export const createBusiness = async (req: Request, res: Response): Promise<void>
 
     let image_url = null;
     if (file) {
-        // Şimdilik local path gibi veriyoruz, ileride AWS'ye upload edeceğiz
-        image_url = `uploads/${file.originalname}`;
+        image_url = await uploadToS3(file); // 🎯 Artık AWS'de
     }
 
     const businessData = {
@@ -40,12 +41,13 @@ export const createBusiness = async (req: Request, res: Response): Promise<void>
     const business = await businessService.createBusiness(businessData);
     res.status(201).json(business);
 };
+
 export const updateBusiness = async (req: Request, res: Response): Promise<void> => {
     const file = (req as AuthRequest).file;
+    let image_url = req.body.image_url;
 
-    let image_url = req.body.image_url || null; // eski değer tutulabilir
     if (file) {
-        image_url = `uploads/${file.originalname}`; // ileride AWS olacak
+        image_url = await uploadToS3(file);
     }
 
     const updated = await businessService.updateBusiness(req.params.id, {
@@ -57,6 +59,7 @@ export const updateBusiness = async (req: Request, res: Response): Promise<void>
         res.status(404).json({ message: 'Business not found' });
         return;
     }
+
     res.json(updated);
 };
 
