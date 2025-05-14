@@ -19,20 +19,26 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:3000',         // Web frontend
-  'http://192.168.x.x:19006',      // Mobil frontend (Expo)
-  'http://192.168.x.x:8081',
-];
-// ✅ GÜNCEL CORS AYARI
 app.use(cors({
   origin: function (origin, callback) {
-    // mobilde origin undefined olabilir, o yüzden izin veriyoruz
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS hatası: Bu origin yetkili değil.'));
+    const allowedOrigins = [
+      'http://localhost:3000',            // Web development
+      'https://zivoapp.com',              // Production web
+      'https://admin.zivoapp.com',        // (Varsa admin panel)
+    ];
+
+    if (!origin) {
+      // Mobil APK'lerden, Postman'den veya bazı cihazlardan gelen isteklerde origin yoktur → izin ver
+      console.log('⚠️ Origin undefined (mobil uygulama olabilir), izin verildi.');
+      return callback(null, true);
     }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.log('❌ Reddedilen origin:', origin);
+    return callback(new Error('CORS hatası: Bu origin yetkili değil.'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
