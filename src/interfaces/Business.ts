@@ -5,7 +5,6 @@ export interface Business {
     name: string;
     businessPhone: string;
     description?: string;
-    address?: string;
     city?: string;
     town?: string;
     adressLine1?: string;

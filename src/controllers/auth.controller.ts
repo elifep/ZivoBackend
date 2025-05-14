@@ -23,7 +23,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const accessToken = jwt.sign(
         { userId: user.userid, role: user.role },
         process.env.JWT_SECRET as string,
-        { expiresIn: '15m' } // kısa ömürlü
+        { expiresIn: '55m' } // kısa ömürlü
     );
 
     const refreshToken = jwt.sign(

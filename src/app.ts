@@ -68,8 +68,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',         // Web frontend
   'http://192.168.x.x:19006',      // Mobil frontend (Expo)
-  //'https://your-admin-panel.com', Gerçek web adresin
-  // 'https://your-mobile-app.com',   Gerçek mobil deploy varsa
+  
 ];
 // ✅ GÜNCEL CORS AYARI
 app.use(cors({

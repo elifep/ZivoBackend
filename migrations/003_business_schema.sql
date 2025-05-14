@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS business (
   name TEXT NOT NULL,
   businessPhone TEXT NOT NULL,
   description TEXT,
-  address TEXT,
   city TEXT,
   town TEXT,
   adressLine1 TEXT,

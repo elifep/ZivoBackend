@@ -17,12 +17,12 @@ export const getBusinessesByUserId = async (userId: string): Promise<Business[]>
 };
 
 export const createBusiness = async (business: Omit<Business, 'businessId'>): Promise<Business> => {
-    const { userId, businessName, name, businessPhone, description, address, city, town, adressLine1, adressLine2, image_url } = business;
+    const { userId, businessName, name, businessPhone, description,  city, town, adressLine1, adressLine2, image_url } = business;
 
     const { rows } = await pool.query(
-        `INSERT INTO business (userId, businessName, name, businessPhone, description, address, city, town, adressLine1, adressLine2, image_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-        [userId, businessName, name, businessPhone, description, address, city, town, adressLine1, adressLine2, image_url]
+        `INSERT INTO business (userId, businessName, name, businessPhone, description, city, town, adressLine1, adressLine2, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+        [userId, businessName, name, businessPhone, description, city, town, adressLine1, adressLine2, image_url]
     );
 
     return rows[0];
