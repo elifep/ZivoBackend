@@ -65,9 +65,22 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:3000',         // Web frontend
+  'http://192.168.x.x:19006',      // Mobil frontend (Expo)
+  //'https://your-admin-panel.com', Gerçek web adresin
+  // 'https://your-mobile-app.com',   Gerçek mobil deploy varsa
+];
 // ✅ GÜNCEL CORS AYARI
 app.use(cors({
-  origin: 'http://localhost:5000',
+  origin: function (origin, callback) {
+    // mobilde origin undefined olabilir, o yüzden izin veriyoruz
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS hatası: Bu origin yetkili değil.'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

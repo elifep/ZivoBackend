@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS appointments (
   servicesId UUID REFERENCES services(servicesId) ON DELETE SET NULL,
   staffId UUID REFERENCES staff(staffId) ON DELETE SET NULL,
   appointment_time TIMESTAMP NOT NULL,
-  status TEXT DEFAULT 'pending'
+  status TEXT DEFAULT 'active'
 );

@@ -29,7 +29,7 @@ export const createBusiness = async (req: Request, res: Response): Promise<void>
 
     let image_url = null;
     if (file) {
-        image_url = await uploadToS3(file); // 🎯 Artık AWS'de
+        image_url = await uploadToS3(file, 'business/', true); // 🎯 Artık AWS'de
     }
 
     const businessData = {
@@ -47,7 +47,7 @@ export const updateBusiness = async (req: Request, res: Response): Promise<void>
     let image_url = req.body.image_url;
 
     if (file) {
-        image_url = await uploadToS3(file);
+        image_url = await uploadToS3(file, 'business/', true);
     }
 
     const updated = await businessService.updateBusiness(req.params.id, {

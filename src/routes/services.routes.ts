@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/', serviceController.getServices);
 router.get('/:id', serviceController.getServiceById);
 router.get('/business/:businessId', serviceController.getServicesByBusinessId);
-router.post('/',authenticate, serviceController.createService);
-router.put('/:id',authenticate, serviceController.updateService);
-router.delete('/:id',authenticate, serviceController.deleteService);
+router.post('/',authenticate(['business']), serviceController.createService);
+router.put('/:id',authenticate(['business']), serviceController.updateService);
+router.delete('/:id',authenticate(['business']), serviceController.deleteService);
 
 export default router;

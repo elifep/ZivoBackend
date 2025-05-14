@@ -1,5 +1,6 @@
 // src/interfaces/Profile.ts
 export interface Profile {
+    signed_url: string;
     profileId: string;
     userId: string;
     phone: string | null;
