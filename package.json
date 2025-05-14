@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "migrate": "ts-node src/utils/runMigrations.ts",
-    "start": "npm run migrate && npm run dev"
+    "start": "npm run build && node dist/app.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
