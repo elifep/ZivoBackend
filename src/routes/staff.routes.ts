@@ -5,8 +5,8 @@ import { authenticate } from '../middleware/auth.middleware';
 const router = Router();
 
 router.get('/business/:businessId', staffController.getStaffByBusiness);
-router.post('/',authenticate, staffController.createStaff);
-router.put('/:id',authenticate, staffController.updateStaff);
-router.delete('/:id',authenticate, staffController.deleteStaff);
+router.post('/', authenticate(['user']), staffController.createStaff);
+router.put('/:id', authenticate(['user']), staffController.updateStaff);
+router.delete('/:id', authenticate(['user']), staffController.deleteStaff);
 
 export default router;
