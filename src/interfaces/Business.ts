@@ -10,4 +10,5 @@ export interface Business {
     adressLine1?: string;
     adressLine2?: string;
     image_url?: string;
+    signed_url?: string;
 }

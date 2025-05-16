@@ -2,10 +2,19 @@ import { Request, Response } from 'express';
 import * as businessService from '../services/business.service';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { uploadToS3 } from '../utils/uploadToS3';
+import { generateSignedUrl } from '../utils/generateSignedUrl';
 
 export const getBusinesses = async (req: Request, res: Response): Promise<void> => {
     const businesses = await businessService.getAllBusinesses();
-    res.json(businesses);
+
+    const withSignedUrls = await Promise.all(businesses.map(async (b) => {
+        if (b.image_url) {
+            b.signed_url = await generateSignedUrl(b.image_url);
+        }
+        return b;
+    }));
+
+    res.json(withSignedUrls);
 };
 
 export const getBusiness = async (req: Request, res: Response): Promise<void> => {
@@ -14,6 +23,11 @@ export const getBusiness = async (req: Request, res: Response): Promise<void> =>
         res.status(404).json({ message: 'Business not found' });
         return;
     }
+
+    if (business.image_url) {
+        business.signed_url = await generateSignedUrl(business.image_url);
+    }
+
     res.json(business);
 };
 
