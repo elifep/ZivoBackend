@@ -31,11 +31,16 @@ export const getReviewsByBusinessId = async (businessId: string): Promise<Review
     );
 
     return rows.map((r) => ({
-        ...r,
+        reviewsId: r.reviewsid,
+        businessId: r.businessid,
+        userId: r.userid,
+        rating: r.rating,
+        comment: r.comment,
+        created_at: r.created_at,
         user: {
             full_name: r.full_name,
             image_url: r.image_url,
-        },
+        }
     }));
 };
 
