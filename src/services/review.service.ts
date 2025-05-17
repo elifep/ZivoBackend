@@ -22,26 +22,30 @@ export const getReviewById = async (id: string): Promise<Review | null> => {
 };
 
 export const getReviewsByBusinessId = async (businessId: string): Promise<Review[]> => {
-    const { rows } = await pool.query(
-        `SELECT r.*, p.full_name, p.image_url
-         FROM reviews r
-         JOIN profiles p ON r.userId = p.userId
-         WHERE r.businessId = $1`,
-        [businessId]
-    );
+    try {
+        const { rows } = await pool.query(
+            `SELECT r.*, p.full_name, p.image_url
+             FROM reviews r
+             LEFT JOIN profile p ON r.userid = p.userid
+             WHERE r.businessid = $1`,
+            [businessId]
+        );
 
-    return rows.map((r) => ({
-        reviewsId: r.reviewsid,
-        businessId: r.businessid,
-        userId: r.userid,
-        rating: r.rating,
-        comment: r.comment,
-        created_at: r.created_at,
-        user: {
-            full_name: r.full_name,
-            image_url: r.image_url,
-        }
-    }));
+        return rows.map((r) => ({
+            reviewsId: r.reviewsid,
+            businessId: r.businessid,
+            userId: r.userid,
+            rating: r.rating,
+            comment: r.comment,
+            created_at: r.created_at,
+            user: {
+                full_name: r.full_name || 'Kullanıcı',
+                image_url: r.image_url || null
+            }
+        }));
+    } catch (error) {
+        throw new Error('Database error');
+    }
 };
 
 export const getReviewsByUserId = async (userId: string): Promise<Review[]> => {

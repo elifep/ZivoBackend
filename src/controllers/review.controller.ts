@@ -16,10 +16,15 @@ export const getReview = async (req: Request, res: Response): Promise<void> => {
     res.json(review);
 };
 export const getReviewsByBusinessId = async (req: Request, res: Response): Promise<void> => {
-    const businessId = req.params.businessId;
-    const reviews = await reviewService.getReviewsByBusinessId(businessId);
-    res.json(reviews);
+    try {
+        const businessId = req.params.businessId;
+        const reviews = await reviewService.getReviewsByBusinessId(businessId);
+        res.json(reviews);
+    } catch (err: any) {
+        res.status(500).json({ message: 'An unexpected server error occurred while fetching reviews.' });
+    }
 };
+
 export const getReviewsByUserId = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params.userId;
     const reviews = await reviewService.getReviewsByUserId(userId);
