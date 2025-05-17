@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.get('/', authenticate(['user', 'business']), favouriteController.getMyFavourites);
+router.get('/', authenticate(['user']), favouriteController.getMyFavourites);
 router.post('/', authenticate(['user']), favouriteController.addToFavourites);
 router.delete('/:businessId', authenticate(['user']), favouriteController.removeFromFavourites);
 

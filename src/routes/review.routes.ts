@@ -4,9 +4,9 @@ import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.get('/', reviewController.getReviews);
+router.get('/', reviewController.getReviews);//admin eklencek
 router.get('/business/:businessId', reviewController.getReviewsByBusinessId);
-router.get('/user/:userId', reviewController.getReviewsByUserId);
+router.get('/user/:userId', authenticate(['user']), reviewController.getReviewsByUserId);
 router.get('/business/:businessId/average', reviewController.getAverageRatingByBusinessId);
 router.get('/:id', reviewController.getReview);
 router.post('/', authenticate(['user']), reviewController.createReview);
