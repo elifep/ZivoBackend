@@ -23,11 +23,22 @@ export const getReviewById = async (id: string): Promise<Review | null> => {
 
 export const getReviewsByBusinessId = async (businessId: string): Promise<Review[]> => {
     const { rows } = await pool.query(
-        'SELECT * FROM reviews WHERE businessId = $1',
+        `SELECT r.*, p.full_name, p.image_url
+         FROM reviews r
+         JOIN profiles p ON r.userId = p.userId
+         WHERE r.businessId = $1`,
         [businessId]
     );
-    return rows;
+
+    return rows.map((r) => ({
+        ...r,
+        user: {
+            full_name: r.full_name,
+            image_url: r.image_url,
+        },
+    }));
 };
+
 export const getReviewsByUserId = async (userId: string): Promise<Review[]> => {
     const { rows } = await pool.query(
         'SELECT * FROM reviews WHERE userId = $1',
