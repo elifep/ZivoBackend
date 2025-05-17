@@ -35,10 +35,25 @@ export const getAverageRatingByBusinessId = async (req: Request, res: Response):
         totalReviews: result.total
     });
 };
-export const createReview = async (req: Request, res: Response): Promise<void> => {
-    const { businessId, userId, rating, comment } = req.body;
-    const review = await reviewService.createReview(businessId, userId, rating, comment);
-    res.status(201).json(review);
+export const createReview = async (req: AuthRequest, res: Response): Promise<void> => {
+    const { businessId, rating, comment } = req.body;
+    const userId = req.user?.userId;
+    const alreadyReviewed = await reviewService.hasUserReviewedBusiness(userId, businessId);
+    if (alreadyReviewed) {
+        res.status(400).json({ message: 'This user has already submitted a review for this business.' });
+        return;
+    }
+    try {
+        const review = await reviewService.createReview(businessId, userId, rating, comment);
+        res.status(201).json(review);
+    } catch (err: any) {
+        if (err.code === '23505') { // duplicate key
+            res.status(400).json({ message: 'This user has already submitted a review for this business.' });
+        } else {
+            res.status(500).json({ message: 'An error occurred while submitting the review.' });
+        }
+    }
+
 };
 
 export const updateReview = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -52,7 +67,10 @@ export const updateReview = async (req: AuthRequest, res: Response): Promise<voi
         res.status(404).json({ message: 'Review not found' });
         return;
     }
-
+    if (!existing.userId) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+    }
     // Sadece yorum sahibi güncelleyebilir
     if (existing.userId !== req.user?.userId) {
         res.status(403).json({ message: 'You can only update your own review' });
@@ -67,13 +85,11 @@ export const updateReview = async (req: AuthRequest, res: Response): Promise<voi
 export const deleteReview = async (req: AuthRequest, res: Response): Promise<void> => {
     const reviewId = req.params.id;
 
-    // Yorumu bul
     const existing = await reviewService.getReviewById(reviewId);
     if (!existing) {
         res.status(404).json({ message: 'Review not found' });
         return;
     }
-    //console.log('existing:', existing);
     // Sadece yorum sahibi veya admin silebilir
     const isOwner = existing.userId === req.user?.userId;
     const isAdmin = req.user?.role === 'admin';

@@ -4,4 +4,6 @@ CREATE TABLE IF NOT EXISTS reviews (
   userId UUID REFERENCES users(userId) ON DELETE CASCADE,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5),
   comment TEXT
+  created_at TIMESTAMP DEFAULT NOW()
+  UNIQUE (userId, businessId)
 );

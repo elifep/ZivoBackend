@@ -7,9 +7,20 @@ export const getAllReviews = async (): Promise<Review[]> => {
 };
 
 export const getReviewById = async (id: string): Promise<Review | null> => {
-    const { rows } = await pool.query('SELECT * FROM reviews WHERE reviewsId = $1', [id]);
+    const { rows } = await pool.query(`
+      SELECT 
+        reviewsid AS "reviewsId",
+        businessid AS "businessId",
+        userid AS "userId",
+        rating,
+        comment
+      FROM reviews
+      WHERE reviewsid = $1
+    `, [id]);
+
     return rows[0] || null;
 };
+
 export const getReviewsByBusinessId = async (businessId: string): Promise<Review[]> => {
     const { rows } = await pool.query(
         'SELECT * FROM reviews WHERE businessId = $1',
@@ -38,6 +49,17 @@ export const getAverageRatingAndTotalByBusinessId = async (
         total: Number(rows[0].total ?? 0)
     };
 };
+export const hasUserReviewedBusiness = async (
+    userId: string,
+    businessId: string
+): Promise<boolean> => {
+    const { rows } = await pool.query(
+        `SELECT 1 FROM reviews WHERE userId = $1 AND businessId = $2 LIMIT 1`,
+        [userId, businessId]
+    );
+    return rows.length > 0;
+};
+
 export const createReview = async (
     businessId: string,
     userId: string,

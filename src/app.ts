@@ -38,7 +38,7 @@ app.use(cors({
     }
 
     console.log('❌ Reddedilen origin:', origin);
-    return callback(new Error('CORS hatası: Bu origin yetkili değil.'));
+    return callback(new Error('CORS error: The request origin is not allowed.'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

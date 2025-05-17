@@ -15,8 +15,8 @@ const runMigrations = async (): Promise<void> => {
             await pool.query(sql);
             console.log(`✅ Migration tamamlandı: ${file}`);
         } catch (err) {
-            console.error(`❌ Migration hatası (${file}):`, err);
-            process.exit(1); // hata olursa işlemi durdur
+            console.error(`❌ Migration Error (${file}):`, err);
+            process.exit(1);
         }
     }
 
