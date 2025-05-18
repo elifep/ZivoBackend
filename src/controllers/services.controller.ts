@@ -27,12 +27,29 @@ export const createService = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateService = async (req: Request, res: Response): Promise<void> => {
-    const updated = await serviceService.updateService(req.params.id, req.body);
-    if (!updated) {
-        res.status(404).json({ message: 'Service not found' });
+    const service = req.body;
+    const id = req.params.id;
+
+    // Zorunlu alan kontrolü
+    const requiredFields = ['businessId', 'name', 'price', 'duration_min'];
+    const missingFields = requiredFields.filter(field => service[field] === undefined || service[field] === null);
+
+    if (missingFields.length > 0) {
+        res.status(400).json({ message: `Eksik alanlar: ${missingFields.join(', ')}` });
         return;
     }
-    res.json(updated);
+
+    try {
+        const updated = await serviceService.updateService(id, service);
+        if (!updated) {
+            res.status(404).json({ message: 'Service not found' });
+            return;
+        }
+        res.json(updated);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Hizmet güncellenirken bir hata oluştu' });
+    }
 };
 
 export const deleteService = async (req: Request, res: Response): Promise<void> => {
