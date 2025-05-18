@@ -21,5 +21,8 @@ CREATE TABLE IF NOT EXISTS business (
   town TEXT,
   adressLine1 TEXT,
   adressLine2 TEXT,
-  image_url TEXT
+  image_url TEXT,
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION;
+  homeService BOOLEAN DEFAULT false;
 );

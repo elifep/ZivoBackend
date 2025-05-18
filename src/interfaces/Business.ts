@@ -11,4 +11,7 @@ export interface Business {
     adressLine2?: string;
     image_url?: string;
     signed_url?: string;
+    latitude?: number;
+    longitude?: number;
+    homeService?: boolean;
 }

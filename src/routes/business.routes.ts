@@ -6,6 +6,11 @@ import { upload } from '../middleware/upload.middleware';
 const router = express.Router();
 
 router.get('/', businessController.getBusinesses);
+router.get('/nearby', businessController.getNearbyBusinesses);
+router.get('/search', businessController.searchBusinesses);
+router.get('/top-rated', businessController.getTopRated);
+router.get('/most-booked', businessController.getMostBooked);
+
 router.get('/:id', businessController.getBusiness);
 router.get('/user/:userId', businessController.getBusinessesByUserId);
 router.post('/', authenticate(['business']), upload.single('image'), businessController.createBusiness);
