@@ -1,5 +1,6 @@
 import pool from '../config/database';
 import { Review } from '../interfaces/Review';
+import { generateSignedUrl } from '../utils/generateSignedUrl';
 
 export const getAllReviews = async (): Promise<Review[]> => {
     const { rows } = await pool.query('SELECT * FROM reviews');
@@ -22,30 +23,41 @@ export const getReviewById = async (id: string): Promise<Review | null> => {
 };
 
 export const getReviewsByBusinessId = async (businessId: string): Promise<Review[]> => {
-    try {
-        const { rows } = await pool.query(
-            `SELECT r.*, p.full_name, p.image_url
-             FROM reviews r
-             LEFT JOIN profile p ON r.userid = p.userid
-             WHERE r.businessid = $1`,
-            [businessId]
-        );
+    const { rows } = await pool.query(
+        `SELECT r.*, p.full_name, p.image_url
+         FROM reviews r
+         JOIN profile p ON r.userId = p.userId
+         WHERE r.businessId = $1`,
+        [businessId]
+    );
 
-        return rows.map((r) => ({
-            reviewsId: r.reviewsid,
-            businessId: r.businessid,
-            userId: r.userid,
-            rating: r.rating,
-            comment: r.comment,
-            created_at: r.created_at,
-            user: {
-                full_name: r.full_name || 'Kullanıcı',
-                image_url: r.image_url || null
+    const reviewsWithSignedUrls = await Promise.all(
+        rows.map(async (r) => {
+            let signedUrl = null;
+            if (r.image_url) {
+                try {
+                    signedUrl = await generateSignedUrl(r.image_url);
+                } catch (err) {
+                    console.error('Signed URL oluşturulamadı:', err);
+                }
             }
-        }));
-    } catch (error) {
-        throw new Error('Database error');
-    }
+
+            return {
+                reviewsId: r.reviewsid,
+                businessId: r.businessid,
+                userId: r.userid,
+                rating: r.rating,
+                comment: r.comment,
+                created_at: r.created_at,
+                user: {
+                    full_name: r.full_name,
+                    image_url: signedUrl, // artık signed_url gönderiyoruz
+                }
+            };
+        })
+    );
+
+    return reviewsWithSignedUrls;
 };
 
 export const getReviewsByUserId = async (userId: string): Promise<Review[]> => {
